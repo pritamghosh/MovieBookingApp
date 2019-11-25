@@ -1,5 +1,7 @@
 package com.pritam.authorization.controller;
 
+import java.security.Principal;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,10 @@ public class UserMangementController {
 		return "Success";
 	}
 
+	@GetMapping("/user/me")
+    public Principal user(Principal principal) {
+        return principal;
+    }
 	@GetMapping("/user")
 	public OAuth2Authentication user(OAuth2Authentication user) {
 		user.eraseCredentials();

@@ -31,4 +31,6 @@ public class Role {
     @Column(name = "ROLE_NAME", unique = true)
     @Enumerated(EnumType.STRING)
     private RoleType role;
+    
+    
 }

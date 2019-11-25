@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,13 +25,17 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
  * together with any @Beans that implement AuthorizationServerConfigurer (there
  * is a handy adapter implementation with empty methods).
  */
-//@Configuration
-//@EnableAuthorizationServer
+@Configuration
+@EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
-	@Autowired
-	@Qualifier("dataSource")
-	private DataSource dataSource;
+	@Value("${user.oauth.clientId}")
+    private String ClientID;
+    @Value("${user.oauth.clientSecret}")
+    private String ClientSecret;
+    @Value("${user.oauth.redirectUris}")
+    private String RedirectURLs;
+	
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	@Autowired
@@ -38,28 +43,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	@Autowired
 	private PasswordEncoder oauthClientPasswordEncoder;
 
-	@Bean
-    public TokenStore tokenStore() {
-       // return new JdbcTokenStore(dataSource);
-		return new InMemoryTokenStore();
-    }
-    @Bean
-    public OAuth2AccessDeniedHandler oauthAccessDeniedHandler() {
-        return new OAuth2AccessDeniedHandler();
-    }
 	
-	/**
-	 * Setting up the endpointsconfigurer authentication manager. The
-	 * AuthorizationServerEndpointsConfigurer defines the authorization and token
-	 * endpoints and the token services.
-	 * 
-	 * @param endpoints
-	 * @throws Exception
-	 */
-	@Override
-	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-		 endpoints.tokenStore(tokenStore()).authenticationManager(authenticationManager).userDetailsService(userDetailsService);
-	}
 
 	/**
 	 * Setting up the clients with a clientId, a clientSecret, a scope, the grant
@@ -70,10 +54,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	 */
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-		clients.inMemory().withClient("client").authorizedGrantTypes("client_credentials", "password", "refresh_token")
-				.authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT", "ROLE_USER").scopes("read", "write", "trust")
-				.resourceIds("oauth2-resource").accessTokenValiditySeconds(5000).refreshTokenValiditySeconds(50000)
-				.secret("secret");
+		clients.inMemory().withClient(ClientID)
+        .secret(oauthClientPasswordEncoder.encode(ClientSecret))
+        .authorizedGrantTypes("authorization_code","password")
+        .scopes("user_info")
+        //.autoApprove(true)
+        .redirectUris(RedirectURLs);
 		  //clients.jdbc(dataSource);
 	}
 
@@ -87,8 +73,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	 */
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-		security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
-//				.passwordEncoder(oauthClientPasswordEncoder);
+		security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()")
+				.passwordEncoder(oauthClientPasswordEncoder);
     }
 
 }

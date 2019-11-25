@@ -18,7 +18,15 @@
 
 
 server:
-  port: 9050
+  port: 9055
+  servlet:
+    context-path: /auth
+    
+user:
+  oauth:
+    clientId: R2dpxQ3vPrtfgF72
+    clientSecret: fDw7Mpkk5czHNuSRtmhGmAGL42CaxQB9
+    redirectUris: http://localhost:9050/login/oauth2/code/local
 
 spring:
     datasource:
@@ -36,40 +44,4 @@ spring:
             ddl-auto: update
         show-sql: true
         generate-ddl: false
-    security:
-      oauth2:
-        client:
-          registration:
-            google:
-              clientId: 480817774888-avshdcjf35cm6aipse5jim11fotj0u87.apps.googleusercontent.com
-              clientSecret: VmeOTlN8w5Bhjutxd9CGpLps
-#              redirectUri: "{baseUrl}/login/oauth2/code/{registrationId}"
-              scope:
-                - email
-                - profile
-            facebook:
-              clientId: 699126306890818
-              clientSecret: aea576ed9abef8444bf1d772c4199eee
-              redirectUri: "{baseUrl}/login/oauth2/code/{registrationId}"
-              scope:
-                - email
-                - public_profile
-            github:
-              clientId: d3e47fc2ddd966fa4352
-              clientSecret: 3bc0f6b8332f93076354c2a5bada2f5a05aea60d
-              redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
-              scope:
-                - user:email
-                - read:user
-#          provider:
-#            facebook:
-#              authorizationUri: https://www.facebook.com/v3.0/dialog/oauth
-#              tokenUri: https://graph.facebook.com/v3.0/oauth/access_token
-#              userInfoUri: https://graph.facebook.com/v3.0/me?fields=id,first_name,middle_name,last_name,name,email,verified,is_verified,picture.width(250).height(250)
-#            google:
-#              authorizationUri: https://accounts.google.com/o/oauth2/auth
-#              tokenUri: https://oauth2.googleapis.com/token
-#              userInfoUri: https://graph.facebook.com/v3.0/me?fields=id,first_name,middle_name,last_name,name,email,verified,is_verified,picture.width(250).height(250)
-            
-
   
